@@ -19,7 +19,8 @@ pipeline{
                         sh "aws eks update-kubeconfig --name vote-dev"
                         sh 'curl -O "https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.5/2023-03-17/bin/linux/amd64/kubectl"'  
                         sh 'chmod u+x ./kubectl'
-                        sh "./kubectl apply -f k8s-specifications/ -n vote "
+                        sh "ls -l"
+                        sh "./kubectl apply -f k8s-specifications -n vote "
                     }
                 }
             }
