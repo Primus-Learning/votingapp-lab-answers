@@ -1,5 +1,7 @@
 // continuous delivery pipeline
 def region = "us-east-1"
+def registry= "940090592876.dkr.ecr.us-east-1.amazonaws.com"
+
 
 pipeline{
     agent any
@@ -15,9 +17,11 @@ pipeline{
                 script{
                     withAWS(region:"$region",credentials:'aws_creds'){
                         sh "aws eks update-kubeconfig --name vote-dev"
-                        sh "kubectl set image deploy/result result=${params.resultTag} -n vote "
-                        sh "kubectl set image deploy/vote result=${params.voteTag} -n vote "
-                        sh "kubectl set image deploy/worker result=${params.workerTag} -n vote "
+                        sh 'curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.5/2024-01-04/bin/linux/amd64/kubectl'  
+                        sh 'chmod u+x ./kubectl'
+                        sh "kubectl set image deploy/result result=${registry}/result:${params.resultTag} -n vote "
+                        sh "kubectl set image deploy/vote vote=${registry}/vote:${params.voteTag} -n vote "
+                        sh "kubectl set image deploy/worker worker=${registry}/worker:${params.workerTag} -n vote "
                         sh "kubectl rollout restart deploy/result deploy/worker deploy/vote -n vote"
                     }
                 }
